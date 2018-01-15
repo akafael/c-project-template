@@ -4,6 +4,6 @@
 /**
  * Some very important function
  */
-int theAswerForEverything();
+int theAnswerForEverything();
 
 #endif
