@@ -4,17 +4,17 @@
 
 #include <stdlib.h>
 #include <stdio.h>
-#include "main.h"
+
+#include "utils.h"
 
 int main()
 {
-  int answer = theAnswerForEverything();
-  printf("The Answer for Everything is %d\n",answer);
+  const char question[] = "What is the Answer to the Ultimate Question of Life, the Universe and Everything?";
+
+  int answer = deepThought(question);
+
+  printf("%s\n",question);
+  printf("> The Answer is %d!\n",answer);
 
   return(0);
-}
-
-int theAnswerForEverything()
-{
-  return(42);
 }
