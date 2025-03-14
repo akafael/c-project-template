@@ -25,12 +25,13 @@ BIN_DIR := $(realpath $(MAKEFILE_DIR))/bin
 # Source Code ------------------------------------------------------------
 
 MAIN_SRC := $(SRCS_DIR)/main.c
+TEST_SRCS := $(wildcard $(SRCS_DIR)/test_*.c)
 SRCS := $(wildcard $(SRCS_DIR)/*.c)
 HEADERS := $(wildcard $(SRCS_DIR)/*.h)
 
 # Generated files --------------------------------------------------------
 
-OBJS := $(patsubst %.c,%.o, $(filter-out ${MAIN_SRC}, $(SRCS)))
+OBJS := $(patsubst %.c,%.o, $(filter-out ${MAIN_SRC} ${TEST_SRCS}, $(SRCS)))
 MAIN_BIN = ${BIN_DIR}/main
 
 ###############################################################################
@@ -47,8 +48,8 @@ build: ${MAIN_BIN}
 	$(CC) $(CC_FLAGS) $(COVERAGE_FLAGS_BUILD) -c $< -o $@
 
 # Build main binary
-${BIN_DIR}/main: $(SRCS_DIR)/main.o $(SRCS_DIR)/utils.o
-	$(CC) $(CC_FLAGS) $^ -o $@
+${BIN_DIR}/main: $(SRCS_DIR)/main.o ${OBJS} ${BIN_DIR}
+	$(CC) $(CC_FLAGS) $< ${OBJS} -o $@
 
 # Generate binary dir if is missing
 ${BIN_DIR}:
@@ -56,8 +57,8 @@ ${BIN_DIR}:
 
 # Tests -----------------------------------------------------
 # Build test file
-${BIN_DIR}/test_%: $(SRCS_DIR)/test_%.o $(SRCS_DIR)/utils.o
-	$(CC) $(CC_FLAGS) $^ -o $@
+${BIN_DIR}/test_%: $(SRCS_DIR)/test_%.o ${OBJS} ${BIN_DIR}
+	$(CC) $(CC_FLAGS) $< ${OBJS} -o $@
 
 test: build ${BIN_DIR}/test_utils_basic
 	${BIN_DIR}/test_utils_basic
