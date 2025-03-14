@@ -129,6 +129,7 @@ ${BIN_DIR}/test_%: $(SRCS_DIR)/test_%.o ${OBJS} ${BIN_DIR}
 .PHONY: test
 test: build ${TEST_BIN}
 	${BIN_DIR}/test_utils_basic
+	${BIN_DIR}/test_utils_utest
 
 # Auxiliar Rules --------------------------------------------------------------
 

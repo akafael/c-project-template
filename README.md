@@ -12,6 +12,11 @@ Minimal Template for C Projects using Makefile
 
 ## Commands
 
+### Download
+```
+git clone --recurse-submodules https://github.com/akafael/c-project-template.git
+```
+
 ### Build
 
 ```bash
