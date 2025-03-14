@@ -34,6 +34,7 @@ HEADERS := $(wildcard $(SRCS_DIR)/*.h)
 
 OBJS := $(patsubst %.c,%.o, $(filter-out ${MAIN_SRC} ${TEST_SRCS}, $(SRCS)))
 MAIN_BIN = ${BIN_DIR}/main
+TEST_BIN := $(patsubst $(SRCS_DIR)/%.c,$(BIN_DIR)/%, $(TEST_SRCS))
 
 # Coverage
 COV_SRCS := $(filter-out test% main%, $(SRCS))
@@ -124,7 +125,9 @@ clear-coverage:
 ${BIN_DIR}/test_%: $(SRCS_DIR)/test_%.o ${OBJS} ${BIN_DIR}
 	$(CC) $(CC_FLAGS) $< ${OBJS} -o $@
 
-test: build ${BIN_DIR}/test_utils_basic
+# Build and run all tests
+.PHONY: test
+test: build ${TEST_BIN}
 	${BIN_DIR}/test_utils_basic
 
 # Auxiliar Rules --------------------------------------------------------------
