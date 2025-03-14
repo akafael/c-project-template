@@ -1,3 +1,5 @@
+[![C/C++ CI](https://github.com/akafael/c-project-template/actions/workflows/build.yaml/badge.svg?branch=master)](https://github.com/akafael/c-project-template/actions/workflows/build.yaml)
+
 # c-project-template
 
 Minimal Template for C Projects using Makefile
@@ -7,8 +9,6 @@ Minimal Template for C Projects using Makefile
 * gcc
 * make
 * lcov
-* gcovr
-* jinja2 (used by gcovr)
 
 ## Commands
 
@@ -42,3 +42,4 @@ make test coverage
  * [GCC Guide](http://www.network-theory.co.uk/docs/gccintro/gccintro_9.html)
  * [Introduction to Makefile](https://www.gnu.org/software/make/manual/make.html#Introduction)
  * [Google C++ Style Guide](https://google.github.io/styleguide/cppguide.html)
+ * [GCOV Example](https://github.com/shenxianpeng/gcov-example): Great code example from @shenxianpeng.
