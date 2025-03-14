@@ -5,18 +5,21 @@ Minimal Template for C Projects using Makefile
 ## Commands
 
 ### Build
-```
-$ make
+
+```bash
+make
 ```
 
 ### Test
-```
-$ make test
+
+```bash
+make test
 ```
 
 ### Removing Generated files
-```
-$ make clear
+
+```bash
+make clear
 ```
 
 ## Reference

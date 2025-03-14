@@ -7,6 +7,13 @@
 *.obj
 *.elf
 
+# Build dir
+bin
+
+# Instrumentation files
+*.gcda
+*.gcno
+
 # Linker output
 *.ilk
 *.map
