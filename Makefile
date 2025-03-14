@@ -21,6 +21,7 @@ CC_FLAGS = -fPIC $(CODE_QUALITY_FLAGS) $(DEBUG_FLAGS)
 MAKEFILE_DIR:=$(dir $(realpath $(firstword $(MAKEFILE_LIST))))
 SRCS_DIR := $(realpath $(MAKEFILE_DIR)/src)
 BIN_DIR := $(realpath $(MAKEFILE_DIR))/bin
+DOCS_DIR := $(realpath $(MAKEFILE_DIR)/docs)
 
 # Source Code ------------------------------------------------------------
 
@@ -33,6 +34,18 @@ HEADERS := $(wildcard $(SRCS_DIR)/*.h)
 
 OBJS := $(patsubst %.c,%.o, $(filter-out ${MAIN_SRC} ${TEST_SRCS}, $(SRCS)))
 MAIN_BIN = ${BIN_DIR}/main
+
+# Coverage
+COV_SRCS := $(filter-out test% main%, $(SRCS))
+GCOV_FILES := $(patsubst %.c,%.c.gcov, $(SRCS))
+GCDA_FILES := $(patsubst %.c,%.gcda, $(SRCS))
+GCNO_FILES := $(patsubst %.c,%.gcno, $(SRCS))
+LCOV_REPORT_DIR := $(abspath $(DOCS_DIR)/lcov)
+LCOV_REPORT_INFO := $(abspath $(LCOV_REPORT_DIR)/coverage.info)
+LCOV_REPORT_HTML := $(abspath $(LCOV_REPORT_DIR)/index.html)
+
+# Coverage target
+COV_TARGET := 80
 
 ###############################################################################
 # Rules
@@ -55,7 +68,58 @@ ${BIN_DIR}/main: $(SRCS_DIR)/main.o ${OBJS} ${BIN_DIR}
 ${BIN_DIR}:
 	mkdir -p ${BIN_DIR}
 
-# Tests -----------------------------------------------------
+# Run Binary
+.PHONY: run
+run: ${BIN_DIR}/main
+	${BIN_DIR}/main
+
+# Test Coverage ---------------------------------------------------------------
+
+# deps: gcc, lcov
+
+# Generate Coverage reports
+.PHONY: coverage
+coverage: lcov-report
+
+# Generate GCOV Report
+.PHONY: gcov_output
+gcov_output: $(GCOV_FILES)
+
+$(GCOV_FILES): gcov_coverage
+
+# Run code coverage
+.PHONY: gcov_coverage
+gcov_coverage:
+	cd $(SRCS_DIR) && \
+	gcov $(SRCS)
+
+# Create report directories
+$(LCOV_REPORT_DIR) $(GCOVR_REPORT_DIR):
+	mkdir -p $@
+
+# Generate LCOV reports
+.PHONY: lcov-report
+lcov-report: $(LCOV_REPORT_HTML)
+
+# Generate LCOV info report
+$(LCOV_REPORT_INFO): $(LCOV_REPORT_DIR) gcov_coverage
+	lcov --capture --rc lcov_branch_coverage=1 \
+	     --directory $(SRCS_DIR) \
+		 --output-file $@
+
+# Generate LCOV html report
+$(LCOV_REPORT_HTML): $(LCOV_REPORT_INFO) $(LCOV_REPORT_DIR)
+	genhtml $< --branch-coverage --output-directory $(LCOV_REPORT_DIR)
+
+# Remove coverage output files
+.PHONY: clear-coverage
+clear-coverage:
+	@rm -rf $(GCDA_FILES) $(SRCS_DIR)/*.gcda
+	@rm -rf $(GCNO_FILES) $(SRCS_DIR)/*.gcno
+	@rm -rf $(GCOV_FILES) $(SRCS_DIR)/*.gcov
+	@rm -rf $(LCOV_REPORT_DIR) $(GCOVR_REPORT_DIR)
+
+# Tests -----------------------------------------------------------------------
 # Build test file
 ${BIN_DIR}/test_%: $(SRCS_DIR)/test_%.o ${OBJS} ${BIN_DIR}
 	$(CC) $(CC_FLAGS) $< ${OBJS} -o $@
@@ -63,13 +127,10 @@ ${BIN_DIR}/test_%: $(SRCS_DIR)/test_%.o ${OBJS} ${BIN_DIR}
 test: build ${BIN_DIR}/test_utils_basic
 	${BIN_DIR}/test_utils_basic
 
-# Auxiliar Roles --------------------------------------------------------------
+# Auxiliar Rules --------------------------------------------------------------
 
 # Clear Generated Files
 .PHONY: clean
-clean:
+clean: clear-coverage
 	@rm -fv $(SRCS_DIR)/*.o
-	@rm -fv $(SRCS_DIR)/*.gcda
-	@rm -fv $(SRCS_DIR)/*.gcno
-	@rm -fv $(SRCS_DIR)/*.gcov
 	@rm ${BIN_DIR}/* -fvr

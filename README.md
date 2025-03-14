@@ -2,6 +2,14 @@
 
 Minimal Template for C Projects using Makefile
 
+## Requirements
+
+* gcc
+* make
+* lcov
+* gcovr
+* jinja2 (used by gcovr)
+
 ## Commands
 
 ### Build
@@ -19,7 +27,14 @@ make test
 ### Removing Generated files
 
 ```bash
-make clear
+make clean
+```
+
+### Generating coverage report
+
+```bash
+make clean
+make test coverage
 ```
 
 ## Reference
