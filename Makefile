@@ -30,6 +30,8 @@ TEST_SRCS := $(wildcard $(SRCS_DIR)/test_*.c)
 SRCS := $(wildcard $(SRCS_DIR)/*.c)
 HEADERS := $(wildcard $(SRCS_DIR)/*.h)
 
+TEST_LIB_HEADER := $(SRCS_DIR)/utest/utest.h
+
 # Generated files --------------------------------------------------------
 
 OBJS := $(patsubst %.c,%.o, $(filter-out ${MAIN_SRC} ${TEST_SRCS}, $(SRCS)))
@@ -121,8 +123,16 @@ clear-coverage:
 	@rm -rf $(LCOV_REPORT_DIR) $(GCOVR_REPORT_DIR)
 
 # Tests -----------------------------------------------------------------------
+# Install test lib
+.PHONY: testlib
+testlib: $(TEST_LIB_HEADER)
+
+# Ensure utest.h is available
+$(TEST_LIB_HEADER):
+	git submodule update --init --recursive
+
 # Build test file
-${BIN_DIR}/test_%: $(SRCS_DIR)/test_%.o ${OBJS} ${BIN_DIR}
+${BIN_DIR}/test_%: $(SRCS_DIR)/test_%.o ${OBJS} ${BIN_DIR} testlib
 	$(CC) $(CC_FLAGS) $< ${OBJS} -o $@
 
 # Build and run all tests
